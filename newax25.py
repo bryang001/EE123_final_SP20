@@ -34,6 +34,7 @@ import sys
 import argparse
 
 from bitarray import bitarray
+from six import string_types
 
 
 
@@ -273,7 +274,7 @@ class AX25(object):
                 # print("Parsing 3rd party header", self.info)
                 self.parse_3rd_party_header()
                 self.third_party = True
-            if self.info is not str:
+            if not isinstance(self.info, string_types):
                 self.info = self.info.decode('utf-8')
         except Exception as e:
 #             print("in except block:", e)
