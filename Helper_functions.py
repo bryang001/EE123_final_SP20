@@ -106,6 +106,27 @@ def imageStack_load(filename):
     
     return image_stack
 
+# Modification of image stack loader with downsampling built in
+
+def imageStack_load_ds(filename, factor):
+    path        = filename[:filename.find('.')]+'/'
+    os.system("rm -rf {:s}".format(path))
+    os.system("mkdir {:s}".format(path))
+    os.system("ffmpeg -i {:s} {:s}frame_%2d.tiff".format(filename, path))
+    image_files = sorted(glob.glob(path+"*.tiff"), key=numericalSort)
+    Nframe = len(image_files)
+    
+    im = Image.open(image_files[0])
+    xdim, ydim= im.size
+    image_stack = np.zeros((Nframe,ydim//factor,xdim//factor,3),dtype='uint8')
+    
+    for i in range(0,Nframe):
+        im = Image.open(image_files[i])
+        im = im.resize((xdim//factor, ydim//factor), resample=Image.BILINEAR)
+        image_stack[i] = np.array(im)
+    
+    return image_stack
+
 # Save gif with ffmpeg
 
 def GIF_save(path, framerate):
